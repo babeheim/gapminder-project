@@ -234,3 +234,4 @@ gapminder %>%
   summarize(mean_lifeExp = mean(lifeExp)) %>%
   arrange(desc(continent))
 
+# http://shinyapps.org/apps/RGraphCompendium/index.php
