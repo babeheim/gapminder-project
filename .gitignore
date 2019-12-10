@@ -2,3 +2,5 @@
 .Rhistory
 data/cats.csv
 bin/
+processed-data/
+results/
