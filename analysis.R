@@ -235,3 +235,105 @@ gapminder %>%
   arrange(desc(continent))
 
 # http://shinyapps.org/apps/RGraphCompendium/index.php
+
+
+# "normal" version of gapminder data
+# one-row-per-country-year
+gap_normal <- data.frame(
+  continent = c("Asia", "Asia", "Asia", "Asia"),
+  country = c("China", "China", "China", "China"),
+  year = c(1992, 1997, 2002, 2007),
+  pop = c(1000, 1200, 1300, 1500),
+  gdpPercap = c(100, 120, 300, 500),
+  lifeExp = c(40, 50, 60, 70)
+)
+
+# one-row-per-country
+gap_wide <- data.frame(
+  continent = c("Asia"),
+  country = c("China"),
+  pop1992 = 1000,
+  pop1997 = 1200,
+  pop2002 = 1300,
+  pop2007 = 1500,
+  gdpPercap1992 = 100,
+  gdpPercap1997 = 120,
+  gdpPercap2002 = 300,
+  gdpPercap2007 = 500,
+  lifeExp1992 = 40,
+  lifeExp1997 = 50,
+  lifeExp2002 = 60,
+  lifeExp2007 = 70
+)
+
+# longest possible version of this data:
+# long table = element / attribute / value
+gap_long <- data.frame(
+  # identifying information
+  country = c("China", "China", "China"),
+  year = c(1992, 1992, 1992),
+  # name of the attribute
+  attribute = c("pop", "gdpPercap", "lifeExp"),
+  # value of the attribute
+  value = c(1000, 100, 40)
+)
+
+
+# we don't want factors! 
+gap_wide <- read.csv("data/gapminder_wide.csv", stringsAsFactors = FALSE)
+
+install.package("tidyr")
+library(tidyr)
+library(dplyr)
+
+# pivot_longer on gap_wide to get to gap_long
+
+gap_long <- gap_wide %>%
+  pivot_longer(
+    cols = c(starts_with("pop"), starts_with("lifeExp"), starts_with("gdpPercap")),
+    names_to = "obstype_year", values_to = "obs_value"
+  ) %>%
+  separate(obstype_year, into = c("obs_type", "year"), sep = "_")
+
+gap_long$year <- as.numeric(gap_long$year)
+
+gap_long %>%
+  group_by(continent, obs_type) %>%
+  summarize(means=mean(obs_value))
+
+# pivot_wider on gap_long to get to gap_normal
+
+gap_normal <- gap_long %>%
+  pivot_wider(names_from = obs_type, values_from = obs_value)
+
+gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = FALSE)
+
+gap_normal <- gap_normal[,colnames(gapminder)]
+
+# prep for the pivot
+gap_temp <- gap_long %>%
+  unite(var_ID, continent, country, sep = "_") %>%
+  unite(var_names, obs_type, year, sep = "_")
+
+gap_wide_again <- gap_long %>%
+  unite(var_ID, continent, country, sep = "_") %>%
+  unite(var_names, obs_type, year, sep = "_") %>%
+  pivot_wider(names_from = var_names, values_from = obs_value) %>%
+  separate(var_ID, into = c("continent", "country"), sep = "_")
+
+
+
+# pivot_longer on gap_normal to get to gap_long
+
+gap_long_test <- gap_normal %>%
+  pivot_longer(
+    cols = c("pop", "lifeExp", "gdpPercap"),
+    names_to = "obs_type", values_to = "obs_value"
+  )
+
+
+
+# rmarkdown
+
+library(knitr)
+
