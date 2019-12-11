@@ -1,0 +1,112 @@
+---
+title: "Rmarkdown Notebook for Gapminder"
+name: "Bret Beheim"
+date: "11 December, 2019"
+output: html_document
+# this is a YAML comment
+---
+
+```{r preamble, echo = FALSE}
+knitr::opts_chunk$set(fig.height = 5, fig.width = 10)
+```
+
+
+# Introduction
+
+This is my Rmarkdown document for our software carpentry class.
+
+<!-- This is how you write comments in Rmarkdown -->
+
+Code blocks a.k.a. chunks use three backtick marks:
+
+```{bash, eval = FALSE}
+cd desktop
+
+for filename in *.dat
+do
+  cp filename .
+done
+```
+
+This is an example with R:
+
+```{r}
+x <- 5^2
+x
+```
+
+
+# Data Processing
+
+```{r load_data, echo = FALSE, results = "hide"}
+
+gapminder <- read.csv("data/gapminder_data.csv", stringsAsFactors = FALSE)
+
+gapminder_2007 <- gapminder[which(gapminder$year == 2007), ]
+
+str(gapminder)
+
+n_obs <- nrow(gapminder)
+
+```
+
+We are analyzing the gapminder data, with an n of `r n_obs` observations on `r length(unique(gapminder$country))` countries over `r length(unique(gapminder$year))` census periods.
+
+# Data Analysis
+
+
+```{r descriptives}
+# calculating summary statistics in base R
+
+sum(c(1, 2, 3))
+
+sum(gapminder$gdp)
+
+sum(gapminder$gdp[gapminder$year == 2007 & gapminder$continent == "Asia"])
+mean(gapminder$gdp[gapminder$year == 2007 & gapminder$continent == "Asia"])
+
+tapply(gapminder$gdp, gapminder$continent, sum)
+tapply(gapminder$gdp, gapminder$year, sum)
+
+
+tapply(gapminder$gdp, list(gapminder$continent, gapminder$year), sum)
+
+
+```
+
+If you wanted to write *italics*, use one asterix. If you wanted to **bold your text**, use two asterixes.
+
+To include a subscript use tildes, i.e. X~1~. To include a superscript, use carots, i.e. word^a^.
+
+To include nice-looking mathematical expressions, use two dollar signs and Latex math notation
+
+$$
+  y_i = \int_{0}^{\infty}{ax^c}{b}\;\;dx
+$$
+
+
+This is an example of a figure called in Rmarkdown.
+
+![Figure 1, life expectancy versus gdp per capita](results/figure1.png)
+
+This is an example of a figure created by the document itself.
+
+```{r generate_gdpPercap_lifeExp, fig.width = 4, fig.height = 2}
+
+library(ggplot2)
+
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp)) +
+  scale_x_log10() +
+  geom_point(alpha = 0.1, size = 2) +
+  geom_smooth(method = "lm", size = 1.5) +
+  theme_minimal()
+
+```
+
+
+# Discussion
+
+# Conclusion
+
+
+

@@ -282,7 +282,7 @@ gap_long <- data.frame(
 # we don't want factors! 
 gap_wide <- read.csv("data/gapminder_wide.csv", stringsAsFactors = FALSE)
 
-install.package("tidyr")
+# install.packages("tidyr")
 library(tidyr)
 library(dplyr)
 
@@ -331,9 +331,4 @@ gap_long_test <- gap_normal %>%
     names_to = "obs_type", values_to = "obs_value"
   )
 
-
-
-# rmarkdown
-
-library(knitr)
 
